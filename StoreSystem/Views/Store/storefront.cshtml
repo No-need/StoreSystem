@@ -1,0 +1,56 @@
+
+
+
+
+<main class="container py-4">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h1 class="h4 mb-0">商品列表</h1>
+        <a class="btn btn-outline-primary" href="@Url.Action("merchant_dashboard","Store")">商品管理</a>
+    </div>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3" id="store-grid"></div>
+</main>
+
+@section Scripts{
+    <script>
+        /* --- 初始化：根據頁面呼叫對應渲染 --- */
+        document.addEventListener("DOMContentLoaded", () => {
+
+            GetProducts();
+        });
+
+        function GetProducts() {
+            axios({
+                url: "@Url.Action("GetProducts", "Store")",
+                method: "post"
+            }).then((resp) => {
+                renderStorefront(resp.data);
+            })
+        }
+
+        function renderStorefront(products) {
+            const el = document.getElementById("store-grid");
+            if (!el) return;
+            const html = products.map(p => `
+            <div class="col">
+              <div class="card h-100 shadow-sm">
+                <img src="@Url.Action("Image","File")?id=${p.imageId}" class="card-img-top object-cover" alt="${p.name}" height="180">
+                <div class="card-body d-flex flex-column">
+                  <h5 class="card-title">${p.name}</h5>
+                  <!--div class="mb-2"><span class="badge text-bg-secondary badge-sku">SKU </span></div-->
+                  <p class="card-text small text-secondary flex-grow-1">${p.description}</p>
+                  <div class="d-flex align-items-center justify-content-between">
+                    <div class="fs-5">\$${p.price}</div>
+                    <button class="btn btn-primary" onclick='GoDetail(${p.productId})'>明細</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `).join("");
+            el.innerHTML = html;
+        }
+
+        function GoDetail(id) {
+            location.href = '@Url.Action("product_form", "Store")'+`?ProductId=${id}`;
+        }
+    </script>
+}

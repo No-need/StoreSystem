@@ -1,0 +1,118 @@
+@model ProductDetailPageViewModel
+@{
+    var isInsert = Model.Detail == null;
+    ViewData["Title"] = "商品管理";
+}
+    <main class="container py-4">
+<div class="row">
+  <div class="col-lg-8">
+    <div class="card shadow-sm mb-3">
+      <div class="card-body">
+        <h2 class="h5">商品資訊</h2>
+                    <form id="ProductForm" onsubmit="@(isInsert?"Insert()":"Update()");return false;">
+          <!-- Razor 可加 @Html.AntiForgeryToken() -->
+          <input type="hidden" id="ProductId" name="ProductId" value="@Model.Detail?.ProductId" />
+          <div class="row g-3">
+            <div class="col-md-8">
+              <label class="form-label">商品名稱</label>
+              <input type="text" class="form-control" name="Name" value="@Model.Detail?.Name" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">SKU</label>
+              <input type="text" class="form-control" name="SKU" value="@Model.Detail?.SKU" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">價格</label>
+              <input type="number" class="form-control" name="Price" min="0" value="@Model.Detail?.Price" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">庫存數量</label>
+              <input type="number" class="form-control" name="Quantity" min="0" value="@Model.Detail?.Quantity" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">分類</label>
+              <select class="form-select" name="Category">
+                    @foreach(var o in Model.CategorySelect)
+                    {
+                        <option value="@o.Value" selected=@(o.Value==Model.Detail?.Category)>@o.Text</option>            
+                    }
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">尺寸</label>
+                <select class="form-select" name="Size">
+                    @foreach (var o in Model.SizeSelect)
+                    {
+                        <option value="@o.Value" selected=@(o.Value==Model.Detail?.Size)>@o.Text</option>
+                    }
+                </select>
+            </div>
+            <div class="col-12">
+              <label class="form-label">商品描述</label>
+              <textarea class="form-control" name="Description" rows="4">@Model.Detail?.Description</textarea>
+            </div>
+            <div class="col-12">
+              <label class="form-label">商品圖片（可多選）</label>
+              <input type="file" class="form-control" name="Images" multiple accept="image/*">
+              <div class="form-text">建議 1200×800 以上，JPG/PNG，單張不超過 2MB。</div>
+            </div>
+            <div class="col-12 d-flex justify-content-end">
+              <button class="btn btn-primary" type="submit">儲存</button>
+                <a class="btn btn-outline-secondary ms-2" href="@Url.Action("merchant_dashboard","Store")">取消</a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="h6 text-secondary">上架設定</h2>
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="active" name="IsActive" checked>
+          <label class="form-check-label" for="active">啟用（顯示於前台）</label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</main>
+
+@section Scripts{
+    <script>
+        function Insert(){
+            var formData = new FormData(document.getElementById("ProductForm"));
+            axios({
+                url: "@Url.Action("CreateProduct", "Store")",
+                data: formData,
+                method:"post",
+                headers: {
+                    'Content-Type': "multipart/form-data"
+                }
+            }).then((res) => {
+                alert("新增成功");
+                location.href = "@Url.Action("merchant_dashboard", "Store")";
+            }).catch((errorInfo) => {
+                alert(errorInfo);
+            });
+        }
+
+        function Update() {
+            var formData = new FormData(document.getElementById("ProductForm"));
+            axios({
+                url: "@Url.Action("UpdateProduct", "Store")",
+                data: formData,
+                method: "post",
+                headers: {
+                    'Content-Type': "multipart/form-data"
+                }
+            }).then((res) => {
+                alert("修改成功");
+                location.href = "@Url.Action("merchant_dashboard", "Store")";
+            }).catch((errorInfo) => {
+                alert(errorInfo);
+            });
+        }
+    </script>
+}

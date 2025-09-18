@@ -1,0 +1,169 @@
+﻿@model OrderDetailPageViewModel
+@{
+    ViewData["Title"] = "訂單明細";
+}
+@section Styles{
+    <style>
+
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+            .section h2 {
+                font-size: 18px;
+                margin-bottom: 10px;
+                border-bottom: 1px solid #ccc;
+                padding-bottom: 5px;
+            }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #f1f1f1;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 14px;
+            color: white;
+        }
+
+            .badge.pending {
+                background: #e53e3e;
+            }
+
+            .badge.shipped {
+                background: #718096;
+            }
+
+            .badge.completed {
+                background: #38a169;
+            }
+    </style>
+}
+<main class="py-4">
+    <div class="container">
+        <h1>訂單明細</h1>
+
+        <div class="section">
+            <h2>基本資訊</h2>
+            <p><strong>訂單編號：</strong><span id="orderId">@Model.OrderId</span></p>
+            <p><strong>訂單人：</strong><span id="orderUser">@Model.OrderMember</span></p>
+            <p><strong>狀態：</strong><span id="orderStatus">@Model.OrderStatus</span></p>
+            <p><strong>建立時間：</strong><span id="orderDate">@Model.OrderDate</span></p>
+        </div>
+
+        <div class="section">
+            <h2>收件資訊</h2>
+            <p><strong>收件人：</strong><span id="receiver">@Model.ReceiveMember</span></p>
+            <p><strong>電話：</strong><span id="phone">@Model.ReceivePhone</span></p>
+            <p><strong>地址：</strong><span id="address">@Model.ReceiveAddress</span></p>
+        </div>
+
+        <div class="section">
+            <h2>付款與配送</h2>
+            <p><strong>付款方式：</strong><span id="paymentMethod">@Model.PayMethod</span></p>
+            <p><strong>付款狀態：</strong><span id="paymentStatus">@Model.PayStatus</span></p>
+            <p><strong>運送方式：</strong><span id="shippingMethod">@Model.ShippingMethod</span></p>
+            <p><strong>運送狀態：</strong><span id="shippingStatus">@Model.ShippingStatus</span></p>
+        </div>
+
+        <div class="section">
+            <h2>商品明細</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>商品名稱</th>
+                        <th>數量</th>
+                        <th>單價</th>
+                        <th>小計</th>
+                    </tr>
+                </thead>
+                <tbody id="orderItems">
+                    @foreach(var p in Model.OrderProducts)
+                    {
+                        <tr>
+                            <td>@p.Name</td>
+                            <td>@p.Quantity</td>
+                            <td>@p.Price</td>
+                            <td>@(p.Quantity*p.Price)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <p><strong>總金額：</strong>NT$ <span id="totalAmount">@(Model.OrderProducts.Sum(x=>x.Quantity*x.Price))</span></p>
+        </div>
+    </div>
+</main>
+
+
+@section Scripts{
+@*     <script>
+        // 模擬單筆訂單
+        const order = {
+            id: "1001",
+            user: "Alice",
+            status: "pending",
+            createdAt: "2025-09-01",
+            receiver: "Alice Wang",
+            phone: "0912-345-678",
+            address: "台北市信義區信義路 100 號",
+            paymentMethod: "信用卡",
+            paymentStatus: "已付款",
+            shippingMethod: "宅配",
+            shippingStatus: "未出貨",
+            items: [
+                { name: "手機", qty: 1, price: 12000 },
+                { name: "手機殼", qty: 2, price: 300 }
+            ]
+        };
+
+        const statusText = { pending: "待出貨", shipped: "已出貨", completed: "已完成" };
+
+        document.getElementById("orderId").innerText = order.id;
+        document.getElementById("orderUser").innerText = order.user;
+        document.getElementById("orderStatus").innerHTML = `<span class="badge ${order.status}">${statusText[order.status]}</span>`;
+        document.getElementById("orderDate").innerText = order.createdAt;
+
+        document.getElementById("receiver").innerText = order.receiver;
+        document.getElementById("phone").innerText = order.phone;
+        document.getElementById("address").innerText = order.address;
+
+        document.getElementById("paymentMethod").innerText = order.paymentMethod;
+        document.getElementById("paymentStatus").innerText = order.paymentStatus;
+        document.getElementById("shippingMethod").innerText = order.shippingMethod;
+        document.getElementById("shippingStatus").innerText = order.shippingStatus;
+
+        const tbody = document.getElementById("orderItems");
+        let total = 0;
+        order.items.forEach(item => {
+            const tr = document.createElement("tr");
+            const subtotal = item.qty * item.price;
+            total += subtotal;
+            tr.innerHTML = `
+                <td>${item.name}</td>
+                <td>${item.qty}</td>
+                <td>NT$ ${item.price}</td>
+                <td>NT$ ${subtotal}</td>
+              `;
+            tbody.appendChild(tr);
+        });
+        document.getElementById("totalAmount").innerText = total;
+    </script> *@
+}

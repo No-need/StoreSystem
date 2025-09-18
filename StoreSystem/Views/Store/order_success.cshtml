@@ -1,0 +1,12 @@
+
+    <main class="container py-4">
+<div class="text-center py-5">
+  <div class="display-6 mb-3">訂單建立成功 🎉</div>
+  <p class="lead">您的訂單編號：<span id="orderno" class="fw-semibold"></span></p>
+  <a class="btn btn-primary mt-3" href="storefront.html">回到商店</a>
+</div>
+<script>
+  const params = new URLSearchParams(location.search);
+  document.getElementById("orderno").textContent = params.get("no") || "DEMO-XXXXXX";
+</script>
+    </main>

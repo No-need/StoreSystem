@@ -1,0 +1,152 @@
+﻿@{
+    ViewData["Title"] = "訂單管理";
+}
+@section Styles{
+    <style>
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+        }
+
+            .search-box label {
+                margin-right: 8px;
+            }
+
+            .search-box input {
+                margin-right: 16px;
+                padding: 4px;
+            }
+
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 14px;
+            color: white;
+        }
+
+            .badge.pending {
+                background: #e53e3e;
+            }
+
+            .badge.shipped {
+                background: #718096;
+            }
+
+            .badge.completed {
+                background: #38a169;
+            }
+    </style>
+
+}
+
+
+<main class="py-4">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h1 class="h4 mb-0">訂單管理</h1>
+    </div>
+    <div class="d-flex search-box">
+        <label>訂單編號：<input class="form-control" type="text" id="orderId"></label>
+        <label>訂單人：<input class="form-control" type="text" id="orderUser"></label>
+        <label>商品名稱：<input class="form-control" type="text" id="productName"></label>
+        <label>訂單時間起：<input class="form-control" type="date" id="startDate"></label>
+        <label>訂單時間迄：<input class="form-control" type="date" id="endDate"></label>
+        <div class="ms-auto align-self-end">
+            <button class="btn btn-primary" onclick="GetOrders()">查詢</button>
+        </div>
+    </div>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>訂單編號</th>
+                            <th>訂單人</th>
+                            <th>商品</th>
+                            <th>金額</th>
+                            <th>時間</th>
+                            <th>狀態</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orderList"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+@section Scripts{
+    <script>
+        // 模擬訂單資料
+        const orders = [
+            { id: "1001", user: "Alice", product: "手機", total: 12000, status: "pending", createdAt: "2025-09-01" },
+            { id: "1002", user: "Bob", product: "耳機", total: 560, status: "shipped", createdAt: "2025-09-02" },
+            { id: "1003", user: "Charlie", product: "筆電", total: 30000, status: "completed", createdAt: "2025-09-03" }
+        ];
+
+        const statusText = { pending: "待出貨", shipped: "已出貨", completed: "已完成" };
+        
+        /* --- 初始化：根據頁面呼叫對應渲染 --- */
+        document.addEventListener("DOMContentLoaded", () => {
+
+            GetOrders();
+        });
+
+        function GetOrders(){
+            axios({
+                url:"@Url.Action("GetOrders","Store")",
+                data: {
+
+                }
+            }).then((resp) => {
+                var orders = resp.data;
+                renderOrders(orders);
+            });
+        }
+
+        function renderOrders(list) {
+            const tbody = document.getElementById("orderList");
+            tbody.innerHTML = "";
+            list.forEach(order => {
+                const tr = document.createElement("tr");
+                var total = SumDatareduce(order.products.map(x => x.quantity * x.price));
+                tr.innerHTML = `
+                  <td>${order.orderId}</td>
+                  <td>${order.orderMember}</td>
+                  <td>${order.products.map(x=>x.name).join()}</td>
+                  <td>NT$ ${total}</td>
+                  <td>${order.orderDate}</td>
+                  <td><span class="badge ${order.orderStatus}">${statusText[order.orderStatus]}</span></td>
+                `;
+                tr.addEventListener("click", () => {
+                    window.location.href = "@Url.Action("order", "Store")" + "?id=" + order.orderId;
+                });
+                tbody.appendChild(tr);
+            });
+        }
+
+        function searchOrders() {
+            const id = document.getElementById("orderId").value.toLowerCase();
+            const user = document.getElementById("orderUser").value.toLowerCase();
+            const product = document.getElementById("productName").value.toLowerCase();
+            const startDate = document.getElementById("startDate").value;
+            const endDate = document.getElementById("endDate").value;
+
+            const filtered = orders.filter(order => {
+                return (!id || order.id.includes(id)) &&
+                    (!user || order.user.toLowerCase().includes(user)) &&
+                    (!product || order.product.toLowerCase().includes(product)) &&
+                    (!startDate || order.createdAt >= startDate) &&
+                    (!endDate || order.createdAt <= endDate);
+            });
+
+            renderOrders(filtered);
+        }
+
+    </script>
+}

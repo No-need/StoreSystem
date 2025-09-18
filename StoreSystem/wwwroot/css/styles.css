@@ -1,0 +1,15 @@
+:root {
+  --mc-radius: 16px;
+}
+.card {
+  border-radius: var(--mc-radius);
+}
+.btn, .form-control, .form-select, .input-group-text {
+  border-radius: 10px;
+}
+.table thead th {
+  background: #fafafa;
+}
+.navbar-brand { letter-spacing: .3px; }
+.badge-sku { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+img.object-cover { object-fit: cover; }
