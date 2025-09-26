@@ -152,8 +152,8 @@ namespace StoreSystem.Services
             return new List<SelectListItem>
             {
                 new SelectListItem ("請選擇", ""),
-                new SelectListItem("上衣","上衣"),
-                new SelectListItem("下身","下身")
+                new SelectListItem("upper_body","上衣"),
+                new SelectListItem("lower_body","下身")
             };
         }
 
