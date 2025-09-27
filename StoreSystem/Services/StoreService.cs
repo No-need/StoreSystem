@@ -328,7 +328,7 @@ namespace StoreSystem.Services
 
         public ClothDataViewModel GetClothData(ClothSearchCondModel cond)
         {
-            var products = _db.Products.Include(x => x.Product_Clothe).Include(x=>x.ProductFiles).Where(x => cond.Index == null || x.Name.Contains(_clothSelect[cond.Index.GetValueOrDefault()])).ToList();
+            var products = _db.Products.Include(x => x.Product_Clothe).Include(x=>x.ProductFiles).Include(x=>x.ProductPrices).Include(x=>x.ProductStocks).Where(x => cond.Index == null || x.Name.Contains(_clothSelect[cond.Index.GetValueOrDefault()])).ToList();
             var group = products.GroupBy(x => x.Name);
             var model = new ClothDataViewModel
             {
@@ -337,7 +337,9 @@ namespace StoreSystem.Services
                     Name = x.Key,
                     Category = x.Select(y=>y.Category).FirstOrDefault(),
                     ImageUrl =  x.SelectMany(y=>y.ProductFiles.Select(z=>z.Path)).FirstOrDefault(),
-                    Size = x.ToDictionary(x=>x.Product_Clothe.Size,x=>x.ProductId)
+                    Size = x.ToDictionary(x=>x.Product_Clothe.Size,x=>x.ProductId),
+                    Price = x.ToDictionary(x=>x.Product_Clothe.Size,x=>x.ProductPrices.Select(x=>x.Price).FirstOrDefault()),
+                    Quantity = x.ToDictionary(x=>x.Product_Clothe.Size,x=>x.ProductStocks.Select(x=>x.Quantity??0).FirstOrDefault())
                 }).ToList()
             };
 

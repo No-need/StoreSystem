@@ -123,5 +123,10 @@ namespace StoreSystem.ViewModels
         public string ImageUrl { get; set; }
 
         public Dictionary<string,long> Size { get; set; } = [];
+
+        public Dictionary<string, decimal?> Price { get; set; } = [];
+
+
+        public Dictionary<string,int> Quantity { get; set; } = [];
     }
 }
